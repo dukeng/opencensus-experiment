@@ -1,0 +1,37 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: sample-trace
+  labels:
+    app: sample-trace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: trace
+  template:
+    metadata:
+      labels:
+        app: trace
+    spec:
+      containers:
+      - name: sample-trace 
+        image: gcr.io/opentelemetrytracesgolanggke/sample-trace:latest
+        ports:
+        - containerPort: 8080
+        env:
+          - name: PORT
+            value: "8080"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sample-trace
+spec:
+  selector:
+    app: sample-trace
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+  type: LoadBalancer
