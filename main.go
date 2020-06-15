@@ -23,12 +23,14 @@ import (
 	"os"
 	"time"
 	"go.opencensus.io/stats/view"
-	"contrib.go.opencensus.io/resource/auto"
+    // "contrib.go.opencensus.io/resource/auto"
+    "contrib.go.opencensus.io/resource/gke"
 	"contrib.go.opencensus.io/exporter/stackdriver"
 	"contrib.go.opencensus.io/exporter/stackdriver/propagation"
 	"go.opencensus.io/plugin/ochttp"
 	"go.opencensus.io/plugin/ocgrpc"
 	"go.opencensus.io/trace"
+	"go.opencensus.io/resource"
 )
 
 func main() {
@@ -74,7 +76,7 @@ func main() {
 
 		span1 := trace.FromContext(r.Context())
 
-		abc, err := auto.Detect(r.Context())
+		abc, err := gke.Detect(r.Context())
 		if err != nil {
 			log.Print(err)
 		} else {
@@ -89,6 +91,9 @@ func main() {
 		if span1 != nil {
 			log.Printf("%+v\n", span1)
 		}
+
+		env, err := resource.FromEnv(r.Context())
+		log.Printf("%+v\n", env)
 
 		// The outgoing request will be traced with r's trace ID.
 		resp, err := client.Do(req)
